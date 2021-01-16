@@ -70,7 +70,7 @@ use rand::seq::SliceRandom;
 #[cfg(feature = "default-rng")]
 #[cfg(feature = "default-words")]
 pub fn petname(words: u8, separator: &str) -> String {
-    Petnames::new().generate_one(words, separator)
+    Petnames::default().generate_one(words, separator)
 }
 
 /// A word list.
@@ -92,16 +92,10 @@ pub struct Petnames<'a> {
 }
 
 impl<'a> Petnames<'a> {
-    /// Constructs a new `Petnames` from the default (small) word lists.
-    #[cfg(feature = "default_dictionary")]
-    pub fn new() -> Self {
-        Self::default()
-    }
-
     /// Constructs a new `Petnames` from the small word lists.
     #[cfg(feature = "default-words")]
     pub fn small() -> Self {
-        Self::init(
+        Self::new(
             include_str!("../words/small/adjectives.txt"),
             include_str!("../words/small/adverbs.txt"),
             include_str!("../words/small/names.txt"),
@@ -111,7 +105,7 @@ impl<'a> Petnames<'a> {
     /// Constructs a new `Petnames` from the medium word lists.
     #[cfg(feature = "default-words")]
     pub fn medium() -> Self {
-        Self::init(
+        Self::new(
             include_str!("../words/medium/adjectives.txt"),
             include_str!("../words/medium/adverbs.txt"),
             include_str!("../words/medium/names.txt"),
@@ -121,7 +115,7 @@ impl<'a> Petnames<'a> {
     /// Constructs a new `Petnames` from the large word lists.
     #[cfg(feature = "default-words")]
     pub fn large() -> Self {
-        Self::init(
+        Self::new(
             include_str!("../words/large/adjectives.txt"),
             include_str!("../words/large/adverbs.txt"),
             include_str!("../words/large/names.txt"),
@@ -131,7 +125,7 @@ impl<'a> Petnames<'a> {
     /// Constructs a new `Petnames` from the given word lists.
     ///
     /// The words are extracted from the given strings by splitting on whitespace.
-    pub fn init(adjectives: &'a str, adverbs: &'a str, names: &'a str) -> Self {
+    pub fn new(adjectives: &'a str, adverbs: &'a str, names: &'a str) -> Self {
         Self {
             adjectives: adjectives.split_whitespace().collect(),
             adverbs: adverbs.split_whitespace().collect(),
@@ -278,6 +272,7 @@ impl<'a> Petnames<'a> {
 
 #[cfg(feature = "default-words")]
 impl<'a> Default for Petnames<'a> {
+    /// Constructs a new `Petnames` from the default (small) word lists.
     fn default() -> Self {
         Self::small()
     }
@@ -497,7 +492,7 @@ mod tests {
 
     #[test]
     fn lists_sequences_adverbs_adjectives_then_names() {
-        let petnames = super::Petnames::init("adjective", "adverb", "name");
+        let petnames = super::Petnames::new("adjective", "adverb", "name");
         let mut lists = super::Lists::new(&petnames, 4);
         assert_eq!(super::Lists::Adverb(&petnames, 1), lists);
         assert_eq!(Some(&vec!["adverb"]), lists.next());
@@ -513,7 +508,7 @@ mod tests {
 
     #[test]
     fn lists_size_hint() {
-        let petnames = super::Petnames::init("adjective", "adverb", "name");
+        let petnames = super::Petnames::new("adjective", "adverb", "name");
         let mut lists = super::Lists::new(&petnames, 3);
         assert_eq!((3, Some(3)), lists.size_hint());
         assert!(lists.next().is_some());
