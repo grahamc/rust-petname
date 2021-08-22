@@ -26,8 +26,7 @@ pub struct Cli {
     #[structopt(short, long = "dir", value_name = "DIR", conflicts_with = "complexity")]
     pub directory: Option<PathBuf>,
 
-    /// Generate multiple names; pass 0 to produce infinite names
-    /// (--count=0 is deprecated; use --stream instead)
+    /// Generate multiple names; or use --stream to generate continuously
     #[structopt(long, value_name = "COUNT", default_value = "1")]
     pub count: usize,
 
