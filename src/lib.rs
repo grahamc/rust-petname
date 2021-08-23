@@ -229,7 +229,12 @@ impl<'a> Petnames<'a> {
     /// println!("name: {}", iter.next().unwrap());
     /// ```
     ///
-    pub fn iter<RNG>(&self, rng: &'a mut RNG, words: u8, separator: &str) -> Names<RNG>
+    pub fn iter<RNG>(
+        &'a self,
+        rng: &'a mut RNG,
+        words: u8,
+        separator: &str,
+    ) -> impl Iterator<Item = String> + 'a
     where
         RNG: rand::Rng,
     {
@@ -341,7 +346,7 @@ impl<'a> Iterator for Lists<'a> {
 }
 
 /// Iterator yielding petnames.
-pub struct Names<'a, RNG>
+struct Names<'a, RNG>
 where
     RNG: rand::Rng,
 {
@@ -349,17 +354,6 @@ where
     rng: &'a mut RNG,
     words: u8,
     separator: String,
-}
-
-impl<'a, RNG> Names<'a, RNG>
-where
-    RNG: rand::Rng,
-{
-    /// Calculate the cardinality of this iterator; see `Petnames::cardinality`.
-    #[allow(dead_code)]
-    pub fn cardinality(&self) -> u128 {
-        self.petnames.cardinality(self.words)
-    }
 }
 
 impl<'a, RNG> Iterator for Names<'a, RNG>
